@@ -113,20 +113,17 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { Category } from '~/types/category';
+import type { Catalog } from '~/types/category';
 
-const { data: catalogsData, status } = await useApi<Category[]>(
-  '/api/catalogs',
-  {
-    lazy: true,
-  },
-);
+const { data: catalogs, status } = await useApi<Catalog[]>('/api/catalogs', {
+  lazy: true,
+});
 
 const navLinks = computed(() => {
   const catalogChildren: Array<{ label: string; to: string }> = [];
 
-  if (catalogsData.value) {
-    const apiCatalogs = catalogsData.value.data;
+  if (catalogs.value) {
+    const apiCatalogs = catalogs.value.data;
 
     if (Array.isArray(apiCatalogs)) {
       apiCatalogs.forEach((cat) => {

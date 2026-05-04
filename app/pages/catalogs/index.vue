@@ -1,83 +1,75 @@
 <template>
-  <div class="py-12 min-h-screen">
-    <UContainer>
-      <div class="mb-12 text-center">
-        <h1
-          class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-4"
-        >
-          All Catalogs
-        </h1>
-        <p class="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-          Explore our wide range of categories. Find the perfect items that suit
-          your lifestyle and needs.
-        </p>
-      </div>
+  <UContainer class="flex-1 flex flex-col w-full max-w-[1800px]">
+    <div class="py-5">
+      <h1 class="text-4xl">Catalogs</h1>
+    </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <NuxtLink
-          v-for="category in categories"
-          :key="category.slug"
-          :to="`/catalogs/${category.slug}`"
-          class="group"
-        >
-          <UCard
-            class="h-full transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-lg dark:hover:shadow-primary-500/10"
-          >
-            <div
-              class="aspect-w-16 aspect-h-9 w-full bg-gray-200 dark:bg-gray-800 rounded-md overflow-hidden mb-4"
-            >
-              <div
-                class="w-full h-full flex items-center justify-center text-gray-400 group-hover:text-primary-500 transition-colors"
-              >
-                <UIcon :name="category.icon" class="w-12 h-12" />
-              </div>
-            </div>
-            <h3
-              class="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-primary-500 transition-colors"
-            >
-              {{ category.name }}
-            </h3>
-            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              {{ category.description }}
-            </p>
-          </UCard>
+    <div
+      v-if="status === 'error'"
+      class="flex-1 flex flex-col items-center justify-center py-10 space-y-4 max-w-lg mx-auto"
+    >
+      <UAlert
+        color="error"
+        variant="subtle"
+        title="Failed to load catalogs"
+        :description="
+          error?.message ||
+          'An unexpected error occurred while fetching the data.'
+        "
+        icon="i-heroicons-exclamation-triangle"
+      />
+      <UButton
+        @click="() => refresh()"
+        color="neutral"
+        variant="solid"
+        icon="i-heroicons-arrow-path"
+      >
+        Try Again
+      </UButton>
+    </div>
+
+    <ul
+      v-else
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8"
+    >
+      <li v-for="catalog in catalogs?.data" :key="catalog.id">
+        <NuxtLink :to="`/catalogs/${catalog.slug}`" class="group">
+          <NuxtImg
+            :src="catalog.image"
+            :alt="catalog.name"
+            format="webp"
+            sizes="sm:200px md:300px lg:400px"
+            class="aspect-square object-cover w-full group-hover:scale-105 transition-transform duration-200"
+          />
+
+          <div class="py-4 flex items-center justify-center gap-x-2">
+            <h2 class="text-sm">{{ catalog.name }}</h2>
+            <UButton
+              color="neutral"
+              variant="ghost"
+              icon="formkit:arrowright"
+              aria-label="View Catalog"
+              size="sm"
+            />
+          </div>
         </NuxtLink>
-      </div>
-    </UContainer>
-  </div>
+      </li>
+    </ul>
+  </UContainer>
 </template>
 
 <script setup lang="ts">
 import { useHead } from '#imports';
+import type { Catalog } from '~/types/category';
 
-const categories = [
-  {
-    name: 'Apparel',
-    slug: 'apparel',
-    description: 'Trendy and comfortable clothing for all seasons.',
-    icon: 'i-heroicons-sparkles',
-  },
-  {
-    name: 'Electronics',
-    slug: 'electronics',
-    description: 'The latest gadgets and high-tech devices.',
-    icon: 'i-heroicons-device-phone-mobile',
-  },
-  {
-    name: 'Accessories',
-    slug: 'accessories',
-    description: 'Watches, jewelry, and styling essentials.',
-    icon: 'i-heroicons-clock',
-  },
-  {
-    name: 'Home',
-    slug: 'home',
-    description: 'Furniture and decor to brighten your living space.',
-    icon: 'i-heroicons-home',
-  },
-];
+const {
+  data: catalogs,
+  status,
+  error,
+  refresh,
+} = await useApi<Catalog[]>('/api/catalogs');
 
 useHead({
-  title: 'All Catalogs - Store',
+  title: 'Catalogs',
 });
 </script>
