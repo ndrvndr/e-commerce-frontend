@@ -20,3 +20,7 @@
     font-family: 'Hubot Sans', var(--font-heading), sans-serif;
   }
 }
+
+:root {
+  --ui-container: 112.5rem;
+}
