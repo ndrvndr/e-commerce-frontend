@@ -15,8 +15,8 @@
   />
 
   <UMain v-else class="flex">
-    <UContainer v-if="catalogs?.data.length">
-      <div class="py-5">
+    <UContainer v-if="catalogs?.data.length" class="py-4 md:py-6 lg:py-8">
+      <div class="pb-5">
         <h1 class="text-4xl">Catalogs</h1>
       </div>
 
@@ -32,6 +32,7 @@
                   ? 'group-hover:rotate-1'
                   : 'group-hover:-rotate-1',
               ]"
+              loading="lazy"
             />
 
             <div

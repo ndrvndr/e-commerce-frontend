@@ -7,10 +7,7 @@
     }"
     :error="{
       statusCode: error?.statusCode || 500,
-      statusMessage: error?.statusMessage || 'Failed to load products',
-      message:
-        error?.message ||
-        'An unexpected error occurred while fetching the data.',
+      statusMessage: error?.statusMessage || 'Something went wrong',
     }"
   />
 
@@ -220,7 +217,9 @@
             />
           </div>
 
-          <p class="text-sm">2 products</p>
+          <p class="text-sm">
+            {{ products?.meta?.total ? products.meta.total : 0 }} products
+          </p>
         </div>
 
         <ul
@@ -252,11 +251,13 @@
                 <NuxtImg
                   :src="product.image_primary"
                   :alt="product.name"
+                  loading="lazy"
                   class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 opacity-100 group-hover:opacity-0"
                 />
                 <NuxtImg
                   :src="product.image_hover"
                   :alt="product.name"
+                  loading="lazy"
                   class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 opacity-0 group-hover:opacity-100"
                 />
               </div>
@@ -418,7 +419,6 @@ const {
   data: products,
   status,
   error,
-  refresh,
 } = await useApi<Product[]>('/api/products', {
   query: queryParams,
 });
