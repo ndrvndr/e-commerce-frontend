@@ -27,7 +27,7 @@
         variant="ghost"
         icon="iconamoon:profile-light"
         aria-label="Profile"
-        to="#"
+        to="/profile"
       />
     </template>
   </UHeader>

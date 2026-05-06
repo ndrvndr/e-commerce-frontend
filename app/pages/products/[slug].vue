@@ -123,33 +123,7 @@
 
         <div class="mt-3">
           <p class="text-sm">Quantity</p>
-          <div
-            class="w-fit mt-1.5 flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden"
-          >
-            <button
-              type="button"
-              class="px-3 py-2 text-lg font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              :disabled="
-                quantity <= 1 || !selectedVariant || selectedVariant.stock === 0
-              "
-              @click="decrement"
-            >
-              −
-            </button>
-            <span
-              class="px-4 py-2 text-base font-semibold text-gray-800 dark:text-white min-w-[3rem] text-center"
-            >
-              {{ quantity }}
-            </span>
-            <button
-              type="button"
-              class="px-3 py-2 text-lg font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              :disabled="!selectedVariant || quantity >= selectedVariant.stock"
-              @click="increment"
-            >
-              +
-            </button>
-          </div>
+          <UInputNumber v-model="quantity" size="xl" class="w-36 mt-1.5" />
         </div>
 
         <div class="flex flex-col gap-y-2.5 mt-5 lg:max-w-sm">
