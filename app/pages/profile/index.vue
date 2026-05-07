@@ -59,7 +59,10 @@
                   Default address
                 </p>
 
-                <USlideover title="Edit Address" v-model:open="editOpen[address.id]">
+                <USlideover
+                  title="Edit Address"
+                  v-model:open="editOpen[address.id]"
+                >
                   <UButton
                     size="xs"
                     color="neutral"
@@ -117,13 +120,15 @@
         variant="outline"
         size="xl"
         class="mt-6"
+        :loading="isLoggingOut"
+        @click="handleLogout"
       />
     </UContainer>
   </UMain>
 </template>
 
 <script setup lang="ts">
-import type { Address, AddressWithId } from '~/types/address';
+import type { AddressWithId } from '~/types/address';
 
 definePageMeta({
   middleware: 'auth',
@@ -143,4 +148,30 @@ const addresses = computed(() => data.value?.data || []);
 
 const addOpen = ref(false);
 const editOpen = reactive<Record<number, boolean>>({});
+
+const router = useRouter();
+const token = useCookie('auth_token');
+const toast = useToast();
+
+const isLoggingOut = ref(false);
+
+const handleLogout = async () => {
+  isLoggingOut.value = true;
+  try {
+    await useApi('/api/logout', {
+      method: 'POST',
+    });
+  } catch (error) {
+    console.error('Failed to delete token on server:', error);
+  } finally {
+    isLoggingOut.value = false;
+    token.value = null;
+    toast.add({
+      title: 'Success',
+      description: 'You have been logged out successfully',
+      color: 'success',
+    });
+    router.push('/authentication/login');
+  }
+};
 </script>
