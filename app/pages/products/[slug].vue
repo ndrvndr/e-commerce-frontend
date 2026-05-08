@@ -278,7 +278,7 @@ function decrement() {
   if (quantity.value > 1) quantity.value--;
 }
 
-const { addItem } = useCart();
+const cart = useCartStore();
 const toast = useToast();
 const router = useRouter();
 
@@ -307,10 +307,10 @@ function buildCartPayload(): Omit<CartItem, 'key'> | null {
 function addToCart() {
   const payload = buildCartPayload();
   if (!payload) return;
-  addItem(payload);
+  cart.addItem(payload);
   toast.add({
-    title: 'Ditambahkan ke keranjang',
-    description: `${payload.productName} — ${payload.color} / ${payload.size} (${payload.quantity} pcs)`,
+    title: 'Added to cart',
+    description: `${payload.productName} — ${payload.color} / ${payload.size} (x${payload.quantity})`,
     color: 'success',
     icon: 'i-heroicons-shopping-cart',
     duration: 3000,
@@ -320,7 +320,7 @@ function addToCart() {
 function buyNow() {
   const payload = buildCartPayload();
   if (!payload) return;
-  addItem(payload);
+  cart.addItem(payload);
   router.push('/checkout');
 }
 

@@ -125,6 +125,7 @@
 
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui';
+import { COUNTRIES, PROVINCES } from '~/constant';
 import {
   AddressSchema,
   type Address,
@@ -139,20 +140,8 @@ const props = defineProps<{
 const emit = defineEmits<{ success: [] }>();
 const { address, id, refresh } = toRefs(props);
 
-const countries = ref([
-  'Indonesia',
-  'Malaysia',
-  'Singapore',
-  'Thailand',
-  'Vietnam',
-]);
-const provinces = ref([
-  'West Java',
-  'Central Java',
-  'East Java',
-  'Banten',
-  'Jakarta',
-]);
+const countries = ref(COUNTRIES);
+const provinces = ref(PROVINCES);
 
 const state = reactive<Partial<Address>>({
   country: address.value?.country || 'Indonesia',
