@@ -1,10 +1,30 @@
 <template>
   <UFooter class="bg-gray-50">
     <template #left>
-      <p class="text-sm">Copyright © {{ new Date().getFullYear() }}</p>
+      <p class="text-sm">
+        &copy; {{ new Date().getFullYear() }} Developed by Ndre
+      </p>
     </template>
 
-    <UNavigationMenu :items="items" variant="link" />
+    <div class="max-w-lg flex flex-col items-center gap-y-3">
+      <p class="text-center text-sm">
+        This portfolio is a decoupled application using
+        <ULink
+          :to="`${useRuntimeConfig().public.apiBase}`"
+          target="_blank"
+          aria-label="Headless API"
+          class="underline underline-offset-2"
+          >Laravel 13</ULink
+        >
+        as a headless API and Nuxt 3 for the frontend.
+      </p>
+
+      <div class="flex items-center gap-2">
+        <UBadge color="neutral" variant="solid" size="md">Vercel</UBadge>
+        <UBadge color="neutral" variant="solid" size="md">Railway</UBadge>
+        <UBadge color="neutral" variant="solid" size="md">Neon</UBadge>
+      </div>
+    </div>
 
     <template #right>
       <UButton
@@ -34,22 +54,3 @@
     </template>
   </UFooter>
 </template>
-
-<script setup lang="ts">
-import type { NavigationMenuItem } from '@nuxt/ui';
-
-const items: NavigationMenuItem[] = [
-  {
-    label: 'Refund Policy',
-    to: '#',
-  },
-  {
-    label: 'Privacy Policy',
-    to: '#',
-  },
-  {
-    label: 'Shipping Policy',
-    to: '#',
-  },
-];
-</script>
