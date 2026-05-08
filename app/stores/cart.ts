@@ -1,28 +1,31 @@
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
 import type { CartItem } from '~/types/cart';
 
-const CART_KEY = 'cart_items';
+export const useCartStore = defineStore('cart', () => {
+  const CART_KEY = 'cart_items';
+  const items = ref<CartItem[]>([]);
+  const isLoaded = ref(false);
 
-const items = ref<CartItem[]>([]);
-
-function loadFromStorage() {
-  if (import.meta.client) {
-    try {
-      const raw = localStorage.getItem(CART_KEY);
-      items.value = raw ? (JSON.parse(raw) as CartItem[]) : [];
-    } catch {
-      items.value = [];
+  function loadFromStorage() {
+    if (import.meta.client && !isLoaded.value) {
+      try {
+        const raw = localStorage.getItem(CART_KEY);
+        if (raw) {
+          items.value = JSON.parse(raw) as CartItem[];
+        }
+      } catch {
+        items.value = [];
+      }
+      isLoaded.value = true;
     }
   }
-}
 
-function saveToStorage() {
-  if (import.meta.client) {
-    localStorage.setItem(CART_KEY, JSON.stringify(items.value));
+  function saveToStorage() {
+    if (import.meta.client && isLoaded.value) {
+      localStorage.setItem(CART_KEY, JSON.stringify(items.value));
+    }
   }
-}
-
-export function useCart() {
-  if (items.value.length === 0) loadFromStorage();
 
   const totalItems = computed(() =>
     items.value.reduce((sum, i) => sum + i.quantity, 0),
@@ -42,7 +45,6 @@ export function useCart() {
     } else {
       items.value.push({ ...item, key });
     }
-
     saveToStorage();
   }
 
@@ -68,7 +70,9 @@ export function useCart() {
   }
 
   return {
-    items: readonly(items),
+    items,
+    isLoaded,
+    loadFromStorage,
     totalItems,
     totalPrice,
     addItem,
@@ -76,4 +80,4 @@ export function useCart() {
     updateQuantity,
     clearCart,
   };
-}
+});
