@@ -8,9 +8,6 @@
     :error="{
       statusCode: error?.statusCode || 500,
       statusMessage: error?.statusMessage || 'Failed to load catalogs',
-      message:
-        error?.message ||
-        'An unexpected error occurred while fetching the data.',
     }"
   />
 

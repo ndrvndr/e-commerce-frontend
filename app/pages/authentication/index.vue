@@ -1,3 +1,9 @@
 <script setup lang="ts">
-await navigateTo('/authentication/login', { redirectCode: 301 });
+definePageMeta({
+  middleware: [
+    function () {
+      return navigateTo('/authentication/login');
+    },
+  ],
+});
 </script>

@@ -154,7 +154,6 @@ const items = computed<NavigationMenuItem[]>(() => {
   catalogChildren.push({ label: 'All Products', to: '/catalogs/all-products' });
 
   return [
-    { label: 'Home', to: '/', active: route.path === '/' },
     {
       label: 'Catalogs',
       to: '/catalogs',
