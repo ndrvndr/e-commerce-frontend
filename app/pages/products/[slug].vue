@@ -237,11 +237,24 @@ const selectedVariant = computed(() => {
 const filteredImages = computed<string[]>(() => {
   const p = product.value;
   if (!p?.colors) return [];
+
+  let images: string[] = [];
+
   if (selectedColor.value) {
     const colorEntry = p.colors.find((c) => c.color === selectedColor.value);
-    if (colorEntry?.images.length) return colorEntry.images;
+    if (colorEntry?.images.length) {
+      images = [...colorEntry.images];
+    }
+  } else {
+    images = p.colors.flatMap((c) => c.images);
   }
-  return p.colors.flatMap((c) => c.images);
+
+  // Menambahkan size chart image di akhir jika ada
+  if (p.size_chart_image) {
+    images.push(p.size_chart_image);
+  }
+
+  return images;
 });
 
 function getSizeStock(size: string): number {

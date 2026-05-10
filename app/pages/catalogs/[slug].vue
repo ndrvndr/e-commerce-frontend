@@ -87,7 +87,9 @@
           </template>
         </USlideover>
 
-        <p class="text-sm">2 products</p>
+        <p class="text-sm">
+          {{ products?.meta?.total ? products.meta.total : 0 }} products
+        </p>
       </div>
 
       <div
@@ -122,7 +124,7 @@
         />
       </div>
 
-      <div class="hidden lg:block col-span-1">
+      <div class="hidden lg:block col-span-1 sticky top-24 self-start">
         <h3>Filters:</h3>
 
         <div

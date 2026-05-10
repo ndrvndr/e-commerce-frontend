@@ -17,6 +17,7 @@ export interface Product {
   slug: string;
   image_primary: string;
   image_hover: string;
+  size_chart_image: string;
   price: number;
   discount_price: number;
   total_stock: number;

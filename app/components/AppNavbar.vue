@@ -1,12 +1,14 @@
 <template>
   <UHeader title="Store" to="/" toggle-side="left" class="bg-gray-50 border-0">
-    <UNavigationMenu
-      variant="link"
-      content-orientation="vertical"
-      arrow
-      :items="items"
-      class="w-full"
-    />
+    <div class="min-w-fit">
+      <UNavigationMenu
+        variant="link"
+        content-orientation="vertical"
+        arrow
+        :items="items"
+        class="w-full"
+      />
+    </div>
 
     <template #right>
       <USlideover title="Your cart" v-model:open="isCartOpen">
@@ -114,6 +116,63 @@
         to="/profile"
       />
     </template>
+
+    <template #body>
+      <div class="flex flex-col gap-y-2">
+        <template v-for="item in items" :key="item.label">
+          <UCollapsible
+            v-if="item.children && item.children.length"
+            default-open
+            class="flex flex-col gap-2"
+          >
+            <UButton
+              :label="item.label"
+              color="neutral"
+              variant="ghost"
+              trailing-icon="i-lucide-chevron-down"
+              size="xl"
+              class="flex items-center justify-between"
+            />
+
+            <template #content>
+              <div class="px-3 flex flex-col gap-y-2">
+                <div
+                  v-for="subItem in item.children"
+                  :key="subItem.to"
+                  class="group flex items-center justify-between"
+                >
+                  <ULink
+                    :to="subItem.to"
+                    active-class="underline underline-offset-2"
+                    class="hover:underline hover:underline-offset-2 text-sm"
+                  >
+                    {{ subItem.label }}
+                  </ULink>
+                  <UIcon
+                    name="solar:arrow-right-up-linear"
+                    class="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  />
+                </div>
+              </div>
+            </template>
+          </UCollapsible>
+
+          <UButton
+            v-else
+            :label="item.label"
+            :to="item.to"
+            color="neutral"
+            variant="ghost"
+            :trailing-icon="
+              item.label !== 'Catalogs' ? 'solar:arrow-right-up-linear' : ''
+            "
+            size="xl"
+            class="w-full flex items-center justify-between"
+            @click="isCartOpen = false"
+          />
+        </template>
+      </div>
+    </template>
   </UHeader>
 </template>
 
@@ -154,15 +213,15 @@ const items = computed<NavigationMenuItem[]>(() => {
   catalogChildren.push({ label: 'All Products', to: '/catalogs/all-products' });
 
   return [
+    { label: 'Home', to: '#', active: route.path === '/' },
     {
       label: 'Catalogs',
-      to: '/catalogs',
       active: route.path.startsWith('/catalogs'),
       children: catalogChildren,
     },
-    { label: 'Contact', to: '#', active: route.path.startsWith('/contact') },
+    { label: 'Message Me', to: '#', active: route.path.startsWith('/contact') },
     { label: 'Gallery', to: '#', active: route.path.startsWith('/gallery') },
-    { label: 'About Us', to: '#', active: route.path.startsWith('/about') },
+    { label: 'Project Info', to: '#', active: route.path.startsWith('/about') },
   ];
 });
 </script>
