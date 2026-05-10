@@ -132,6 +132,7 @@
               trailing-icon="i-lucide-chevron-down"
               size="xl"
               class="flex items-center justify-between"
+              :class="!item.active ? 'text-neutral-500' : ''"
             />
 
             <template #content>
@@ -144,6 +145,7 @@
                   <ULink
                     :to="subItem.to"
                     active-class="underline underline-offset-2"
+                    inactive-class="text-neutral-500"
                     class="hover:underline hover:underline-offset-2 text-sm"
                   >
                     {{ subItem.label }}
@@ -168,6 +170,7 @@
             "
             size="xl"
             class="w-full flex items-center justify-between"
+            :class="!item.active ? 'text-neutral-500' : ''"
             @click="isCartOpen = false"
           />
         </template>
@@ -219,7 +222,11 @@ const items = computed<NavigationMenuItem[]>(() => {
       active: route.path.startsWith('/catalogs'),
       children: catalogChildren,
     },
-    { label: 'Message Me', to: '#', active: route.path.startsWith('/contact') },
+    {
+      label: 'Message Me',
+      to: '/contact',
+      active: route.path.startsWith('/contact'),
+    },
     { label: 'Gallery', to: '#', active: route.path.startsWith('/gallery') },
     { label: 'Project Info', to: '#', active: route.path.startsWith('/about') },
   ];
