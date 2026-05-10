@@ -6,23 +6,32 @@
       </p>
     </template>
 
-    <div class="max-w-lg flex flex-col items-center gap-y-3">
-      <p class="text-center text-sm">
-        This portfolio is a decoupled application using
+    <div class="text-center">
+      <p class="text-xs text-gray-500 mb-3">Powered by a modern stack</p>
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        <UBadge variant="subtle" color="primary" size="sm" class="font-mono">
+          Nuxt.js
+        </UBadge>
         <ULink
           :to="`${useRuntimeConfig().public.apiBase}`"
           target="_blank"
-          aria-label="Headless API"
-          class="underline underline-offset-2"
-          >Laravel 13</ULink
+          rel="noopener noreferrer"
+          class="flex items-center"
         >
-        as a headless API and Nuxt 3 for the frontend.
-      </p>
-
-      <div class="flex items-center gap-2">
-        <UBadge color="neutral" variant="solid" size="md">Vercel</UBadge>
-        <UBadge color="neutral" variant="solid" size="md">Railway</UBadge>
-        <UBadge color="neutral" variant="solid" size="md">Neon</UBadge>
+          <UBadge variant="subtle" color="error" size="sm" class="font-mono">
+            Laravel 13
+          </UBadge>
+        </ULink>
+        <USeparator orientation="vertical" class="h-5" />
+        <UBadge variant="outline" color="neutral" size="sm" class="opacity-70">
+          Vercel
+        </UBadge>
+        <UBadge variant="outline" color="neutral" size="sm" class="opacity-70">
+          Render
+        </UBadge>
+        <UBadge variant="outline" color="neutral" size="sm" class="opacity-70">
+          Neon DB
+        </UBadge>
       </div>
     </div>
 
