@@ -227,7 +227,11 @@ const items = computed<NavigationMenuItem[]>(() => {
       to: '/contact',
       active: route.path.startsWith('/contact'),
     },
-    { label: 'Gallery', to: '#', active: route.path.startsWith('/gallery') },
+    {
+      label: 'Gallery',
+      to: '/gallery',
+      active: route.path.startsWith('/gallery'),
+    },
     { label: 'Project Info', to: '#', active: route.path.startsWith('/about') },
   ];
 });
