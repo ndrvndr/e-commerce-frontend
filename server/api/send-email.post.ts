@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   try {
     const data = await resend.emails.send({
       from: 'onboarding@resend.dev',
-      to: ['andreavindra37@gmail.com'],
+      to: [process.env.NUXT_RESEND_TO_EMAIL!],
       subject: body.subject,
       html: `
         <p><strong>Name:</strong> ${body.name}</p>
