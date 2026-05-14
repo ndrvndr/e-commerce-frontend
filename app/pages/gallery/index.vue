@@ -1,5 +1,17 @@
 <template>
-  <UMain>
+  <UError
+    v-if="status === 'error'"
+    :clear="{
+      color: 'neutral',
+      variant: 'solid',
+    }"
+    :error="{
+      statusCode: error?.statusCode || 500,
+      statusMessage: error?.statusMessage || 'Failed to load catalogs',
+    }"
+  />
+
+  <UMain v-else>
     <UContainer
       class="max-w-7xl mx-auto py-4 space-y-8 md:pt-36 md:py-6 lg:py-8 lg:space-y-12"
     >
@@ -27,9 +39,9 @@
 
       <div class="columns-2 gap-1 md:columns-3 lg:columns-4">
         <NuxtImg
-          v-for="image in 24"
+          v-for="image in images"
           :key="image"
-          :src="`${baseUrl}/image-${String(image).padStart(2, '0')}.webp`"
+          :src="image"
           class="mb-1"
           loading="lazy"
         />
@@ -43,6 +55,6 @@ useHead({
   title: 'Gallery',
 });
 
-const config = useRuntimeConfig();
-const baseUrl = `${config.public.r2Url}/gallery`;
+const { data, status, error } = await useApi<string[]>('/api/gallery');
+const images = computed(() => data.value?.data || []);
 </script>
