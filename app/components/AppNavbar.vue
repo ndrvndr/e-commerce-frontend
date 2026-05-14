@@ -216,7 +216,7 @@ const items = computed<NavigationMenuItem[]>(() => {
   catalogChildren.push({ label: 'All Products', to: '/catalogs/all-products' });
 
   return [
-    { label: 'Home', to: '#', active: route.path === '/' },
+    // { label: 'Home', to: '#', active: route.path === '/' },
     {
       label: 'Catalogs',
       active: route.path.startsWith('/catalogs'),
@@ -232,7 +232,11 @@ const items = computed<NavigationMenuItem[]>(() => {
       to: '/gallery',
       active: route.path.startsWith('/gallery'),
     },
-    { label: 'Project Info', to: '#', active: route.path.startsWith('/about') },
+    {
+      label: 'Project Info',
+      to: '/about',
+      active: route.path.startsWith('/about'),
+    },
   ];
 });
 </script>
