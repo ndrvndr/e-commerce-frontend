@@ -10,12 +10,15 @@ A modern, full-featured e-commerce storefront built with **Nuxt 4** and **Vue 3*
 [![Pinia](https://img.shields.io/badge/Pinia-3.x-F7DC6F?style=for-the-badge&logo=pinia&logoColor=black)](https://pinia.vuejs.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 
+🔗 **[View Live Demo](https://e-commerce-frontend-zeta-lac.vercel.app/)**
+
 </div>
 
 ---
 
 ## 📋 Table of Contents
 
+- [Live Demo](#-live-demo)
 - [Overview](#-overview)
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
@@ -25,6 +28,14 @@ A modern, full-featured e-commerce storefront built with **Nuxt 4** and **Vue 3*
 - [Pages & Routes](#-pages--routes)
 - [Architecture](#-architecture)
 - [Deployment](#-deployment)
+
+---
+
+## 🔗 Live Demo
+
+> **[https://e-commerce-frontend-zeta-lac.vercel.app/](https://e-commerce-frontend-zeta-lac.vercel.app/)**
+
+Hosted on **Vercel** — connected to a live Laravel 13 API deployed on **Render**, backed by a **Neon DB** serverless PostgreSQL database.
 
 ---
 
