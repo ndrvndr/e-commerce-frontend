@@ -1,30 +1,22 @@
-import type { AddressWithId } from '~/types/address';
-import type { User } from '~/types/me';
+import type { AddressWithId } from "~/types/address";
 
 export function useCheckoutUser() {
   const toast = useToast();
-  const router = useRouter();
-  const authToken = useCookie('auth_token');
+  const { user, logout, isLoggedIn, fetchUser } = useAuth();
   const isLoggingOut = ref(false);
 
-  const { data: meResponse, execute: fetchCurrentUser } = useApi<User>(
-    '/api/me',
-    {
-      immediate: !!authToken.value,
-    },
-  );
-
-  const currentUser = computed(() => meResponse.value?.data ?? null);
-
-  const {
-    data: addressesResponse,
-    refresh: refreshAddresses,
-    execute: fetchAddresses,
-  } = useApi<AddressWithId[]>('/api/addresses', {
-    key: 'user-addresses',
-    immediate: !!authToken.value,
+  const { data: addressesResponse, refresh: refreshAddresses } = useApi<
+    AddressWithId[]
+  >("/api/addresses", {
+    key: "user-addresses",
+    server: false,
+    immediate: false,
   });
 
+  const isLoadingUser = ref(true);
+  const isLoadingAddresses = ref(false);
+
+  const currentUser = computed(() => user.value ?? null);
   const savedAddresses = computed(() => addressesResponse.value?.data ?? []);
   const defaultAddress = computed(
     () => savedAddresses.value.find((a) => a.is_default) ?? null,
@@ -33,32 +25,31 @@ export function useCheckoutUser() {
     () => savedAddresses.value.length >= 4,
   );
 
-  watch(
-    () => authToken.value,
-    (newToken) => {
-      if (newToken) {
-        fetchCurrentUser();
-        fetchAddresses();
-      }
-    },
-    { immediate: true },
-  );
+  onMounted(async () => {
+    isLoadingUser.value = true;
+    await fetchUser();
+    isLoadingUser.value = false;
+
+    if (isLoggedIn.value) {
+      isLoadingAddresses.value = true;
+      await refreshAddresses();
+      isLoadingAddresses.value = false;
+    }
+  });
 
   async function handleLogout() {
     isLoggingOut.value = true;
     try {
-      await useApi('/api/logout', { method: 'POST' });
+      await logout();
+      toast.add({
+        title: "Signed out",
+        description: "You have been logged out successfully.",
+        color: "success",
+      });
     } catch (error) {
-      console.error('[useCheckoutUser] Logout failed:', error);
+      console.error("[useCheckoutUser] Logout failed:", error);
     } finally {
       isLoggingOut.value = false;
-      authToken.value = null;
-      toast.add({
-        title: 'Signed out',
-        description: 'You have been logged out successfully.',
-        color: 'success',
-      });
-      router.push('/authentication/login');
     }
   }
 
@@ -68,6 +59,8 @@ export function useCheckoutUser() {
     defaultAddress,
     hasReachedAddressLimit,
     refreshAddresses,
+    isLoadingUser,
+    isLoadingAddresses,
     isLoggingOut,
     handleLogout,
   };

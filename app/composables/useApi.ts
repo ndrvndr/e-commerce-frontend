@@ -7,14 +7,21 @@ export function useApi<T>(
 ) {
   const config = useRuntimeConfig();
 
-  const token = useCookie('auth_token').value;
+  const serverHeaders: Record<string, string> = {};
+  if (import.meta.server) {
+    const requestHeaders = useRequestHeaders(['cookie']);
+    if (requestHeaders.cookie) {
+      serverHeaders.cookie = requestHeaders.cookie;
+    }
+  }
 
   return useFetch<ApiResponse<T>>(url, {
     baseURL: config.public.apiBase,
+    credentials: 'include',
     ...options,
     headers: {
       Accept: 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...serverHeaders,
       ...options?.headers,
     },
   });

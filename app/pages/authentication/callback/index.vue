@@ -1,34 +1,3 @@
-<script setup>
-definePageMeta({
-  middleware: 'guest',
-  layout: false,
-});
-
-const route = useRoute();
-const router = useRouter();
-const toast = useToast();
-
-onMounted(() => {
-  const token = route.query.token;
-
-  if (token) {
-    const tokenCookie = useCookie('auth_token', { maxAge: 60 * 60 * 24 * 7 });
-    tokenCookie.value = token;
-
-    toast.add({
-      title: 'Welcome back!',
-      description: 'You have been logged in successfully.',
-      icon: 'i-heroicons-check-circle',
-      color: 'success',
-    });
-
-    router.push('/profile');
-  } else {
-    router.push('/authentication/login?error=Failed to authenticate');
-  }
-});
-</script>
-
 <template>
   <UMain class="min-h-screen flex items-center justify-center">
     <UContainer>
@@ -43,3 +12,43 @@ onMounted(() => {
     </UContainer>
   </UMain>
 </template>
+
+<script setup lang="ts">
+definePageMeta({
+  middleware: 'guest',
+  layout: false,
+});
+
+const route = useRoute();
+const router = useRouter();
+const toast = useToast();
+const { clearUser } = useAuth();
+
+onMounted(async () => {
+  const code = route.query.code;
+
+  if (!code) {
+    return router.push('/authentication/login?error=Failed to authenticate');
+  }
+
+  try {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/api/auth/verify-code`, {
+      method: 'POST',
+      body: { code },
+      credentials: 'include',
+    });
+
+    toast.add({
+      title: 'Welcome back!',
+      description: 'You have been logged in successfully.',
+      icon: 'i-heroicons-check-circle',
+      color: 'success',
+    });
+
+    clearUser();
+    router.push('/profile');
+  } catch (e) {
+    router.push('/authentication/login?error=Failed to authenticate');
+  }
+});
+</script>

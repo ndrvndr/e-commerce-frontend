@@ -17,9 +17,9 @@
 
       <div class="mt-6">
         <UCard class="text-sm">
-          <p class="font-semibold">Andre</p>
+          <p class="font-semibold">{{ user?.name }}</p>
           <p class="mt-4 text-neutral-400">Email</p>
-          <p class="mt-0.5">andreavindra37@gmail.com</p>
+          <p class="mt-0.5">{{ user?.email }}</p>
         </UCard>
 
         <UCard class="mt-6 text-sm">
@@ -44,7 +44,19 @@
           </div>
 
           <div
-            v-if="Array.isArray(addresses) && addresses.length > 0"
+            v-if="status === 'idle' || pending"
+            class="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4"
+          >
+            <div v-for="i in 4" :key="i" class="space-y-2">
+              <USkeleton class="h-4 w-3/4" />
+              <USkeleton class="h-3 w-full" />
+              <USkeleton class="h-3 w-2/3" />
+              <USkeleton class="h-3 w-1/2" />
+            </div>
+          </div>
+
+          <div
+            v-else-if="Array.isArray(addresses) && addresses.length > 0"
             class="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4"
           >
             <div
@@ -94,10 +106,16 @@
               </div>
 
               <div class="mt-2.5 space-y-0.5">
-                <p>{{ address.first_name }} {{ address.last_name }}</p>
+                <p>
+                  {{ address.first_name }}
+                  {{ address.last_name }}
+                </p>
                 <p>{{ address.address }}</p>
                 <p>{{ address.city }}</p>
-                <p>{{ address.province }}, {{ address.postal_code }}</p>
+                <p>
+                  {{ address.province }},
+                  {{ address.postal_code }}
+                </p>
                 <p>{{ address.country }}</p>
                 <p>{{ address.phone_number }}</p>
               </div>
@@ -138,10 +156,11 @@ useHead({
   title: 'Profile',
 });
 
-const { data, status, error, refresh } = await useApi<AddressWithId[]>(
+const { data, status, error, refresh, pending } = await useApi<AddressWithId[]>(
   '/api/addresses',
   {
     key: 'user-addresses',
+    server: false,
   },
 );
 const addresses = computed(() => data.value?.data || []);
@@ -149,29 +168,23 @@ const addresses = computed(() => data.value?.data || []);
 const addOpen = ref(false);
 const editOpen = reactive<Record<number, boolean>>({});
 
-const router = useRouter();
-const token = useCookie('auth_token');
+const { logout, user } = useAuth();
 const toast = useToast();
-
 const isLoggingOut = ref(false);
 
 const handleLogout = async () => {
   isLoggingOut.value = true;
   try {
-    await useApi('/api/logout', {
-      method: 'POST',
-    });
-  } catch (error) {
-    console.error('Failed to delete token on server:', error);
-  } finally {
-    isLoggingOut.value = false;
-    token.value = null;
+    await logout();
     toast.add({
       title: 'Success',
       description: 'You have been logged out successfully',
       color: 'success',
     });
-    router.push('/authentication/login');
+  } catch (error) {
+    console.error('Failed to logout:', error);
+  } finally {
+    isLoggingOut.value = false;
   }
 };
 </script>

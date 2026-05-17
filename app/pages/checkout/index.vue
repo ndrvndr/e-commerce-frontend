@@ -13,6 +13,7 @@
           :current-user="currentUser"
           :email="formState.email ?? ''"
           :is-logging-out="isLoggingOut"
+          :is-loading="isLoadingUser"
           @logout="handleLogout"
           @update:email="formState.email = $event"
         />
@@ -24,6 +25,7 @@
           :selected-address="formState.address"
           :form-state="formState"
           :refresh-addresses="refreshAddresses"
+          :is-loading="isLoadingUser || isLoadingAddresses"
           @select-address="applyAddressToForm"
           @update:field="(field, value) => ((formState as any)[field] = value)"
         />
@@ -99,6 +101,8 @@ const {
   defaultAddress,
   hasReachedAddressLimit,
   refreshAddresses,
+  isLoadingUser,
+  isLoadingAddresses,
   isLoggingOut,
   handleLogout,
 } = useCheckoutUser();

@@ -1,7 +1,9 @@
-export default defineNuxtRouteMiddleware((to, from) => {
-  const token = useCookie('auth_token')
+export default defineNuxtRouteMiddleware(async () => {
+  const { fetchUser, isLoggedIn } = useAuth();
 
-  if (token.value) {
-    return navigateTo('/profile')
+  await fetchUser();
+
+  if (isLoggedIn.value) {
+    return navigateTo('/profile');
   }
-})
+});

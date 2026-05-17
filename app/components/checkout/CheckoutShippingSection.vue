@@ -4,7 +4,9 @@
       <UButton
         color="neutral"
         variant="ghost"
-        trailing-icon="i-lucide-chevron-down"
+        :trailing-icon="
+          isOpen ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'
+        "
         class="p-0 hover:bg-transparent active:bg-transparent text-xl font-semibold items-center justify-between"
       >
         <h2 class="text-xl font-semibold">Shipping method</h2>
@@ -89,7 +91,7 @@ const emit = defineEmits<{
   'update:courier-code': [code: string];
 }>();
 
-const token = useCookie('auth_token').value;
+const { isLoggedIn } = useAuth();
 
-const isOpen = ref(token ? false : true);
+const isOpen = ref(!isLoggedIn.value);
 </script>

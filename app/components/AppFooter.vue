@@ -12,16 +12,9 @@
         <UBadge variant="subtle" color="primary" size="sm" class="font-mono">
           Nuxt.js
         </UBadge>
-        <ULink
-          :to="`${useRuntimeConfig().public.apiBase}`"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex items-center"
-        >
-          <UBadge variant="subtle" color="error" size="sm" class="font-mono">
-            Laravel 13
-          </UBadge>
-        </ULink>
+        <UBadge variant="subtle" color="error" size="sm" class="font-mono">
+          Laravel 13
+        </UBadge>
         <USeparator orientation="vertical" class="h-5" />
         <UBadge variant="outline" color="neutral" size="sm" class="opacity-70">
           Vercel

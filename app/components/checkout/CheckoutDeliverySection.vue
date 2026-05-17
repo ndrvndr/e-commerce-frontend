@@ -13,7 +13,18 @@
       </UButton>
 
       <template #content>
-        <div v-if="hasDefaultAddress" class="space-y-3.5">
+        <div v-if="isLoading" class="space-y-3">
+          <div
+            v-for="i in 2"
+            :key="i"
+            class="border border-neutral-200 rounded-lg p-3.5 space-y-2"
+          >
+            <USkeleton class="h-4 w-3/4" />
+            <USkeleton class="h-3 w-1/2" />
+          </div>
+        </div>
+
+        <div v-else-if="hasDefaultAddress" class="space-y-3.5">
           <div
             class="border border-neutral-200 rounded-lg divide-y divide-neutral-200"
           >
@@ -36,15 +47,16 @@
                   :checked="selectedAddress === address.address"
                   @change="emit('select-address', address)"
                 />
-
                 <span class="flex-1 flex items-start justify-between gap-x-2.5">
                   <span class="flex-1 flex flex-col">
                     <span class="font-medium">
-                      {{ address.first_name }} {{ address.last_name }},
+                      {{ address.first_name }}
+                      {{ address.last_name }},
                       {{ address.address }}
                     </span>
                     <span class="text-neutral-400">
-                      {{ address.city }}, {{ address.province }}
+                      {{ address.city }},
+                      {{ address.province }}
                       {{ address.postal_code }},
                       {{ address.country }}
                     </span>
@@ -118,6 +130,35 @@
         </div>
 
         <div v-else class="space-y-4">
+          <template v-if="isLoggedIn">
+            <USlideover title="Add Address" v-model:open="isAddAddressOpen">
+              <UButton
+                type="button"
+                variant="outline"
+                color="neutral"
+                icon="material-symbols:add-rounded"
+                class="w-full justify-center"
+                size="xl"
+              >
+                Add address to your account
+              </UButton>
+              <template #body>
+                <AddressForm
+                  :refresh="refreshAddresses"
+                  @success="isAddAddressOpen = false"
+                />
+              </template>
+            </USlideover>
+
+            <div class="flex items-center gap-x-3">
+              <UDivider />
+              <span class="text-sm text-neutral-400 shrink-0"
+                >or fill manually</span
+              >
+              <UDivider />
+            </div>
+          </template>
+
           <UFormField name="country">
             <USelectMenu
               :model-value="formState.country"
@@ -243,6 +284,7 @@ const props = defineProps<{
   selectedAddress: string | undefined;
   formState: Partial<CheckoutFormSchema>;
   refreshAddresses: () => Promise<void>;
+  isLoading: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -250,9 +292,9 @@ const emit = defineEmits<{
   'update:field': [field: keyof CheckoutFormSchema, value: any];
 }>();
 
-const token = useCookie('auth_token').value;
+const { isLoggedIn } = useAuth();
 
-const isOpen = ref(token ? false : true);
+const isOpen = ref(!isLoggedIn.value);
 const isAddAddressOpen = ref(false);
 const editOpenMap = reactive<Record<number, boolean>>({});
 

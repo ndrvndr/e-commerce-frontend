@@ -255,17 +255,23 @@ pnpm postinstall
 Create a `.env` file in the project root:
 
 ```env
-# Base URL of the Laravel API (no trailing slash)
-NUXT_PUBLIC_API_BASE=http://localhost:8000/api
+# Base URL of the Laravel API (no trailing slash, no /api suffix)
+NUXT_PUBLIC_API_BASE=http://localhost:8000
 
-# Resend API key — used by server routes for sending emails (e.g. contact form)
+# Resend API key — used by the contact form (server-side only)
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
+
+# Recipient email address for contact form submissions
+RESEND_TO_EMAIL=your@email.com
 ```
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `NUXT_PUBLIC_API_BASE` | ✅ | `http://localhost:8000/api` | Laravel API base URL |
-| `RESEND_API_KEY` | ⚠️ server only | — | Resend key for transactional emails |
+| `NUXT_PUBLIC_API_BASE` | ✅ | `http://localhost:8000` | Laravel API base URL |
+| `RESEND_API_KEY` | ⚠️ server only | — | Resend API key for sending emails via contact form |
+| `RESEND_TO_EMAIL` | ⚠️ server only | — | Email address that receives contact form submissions |
+
+> Do NOT include a trailing slash or `/api` suffix — the app appends these automatically.
 
 > `NUXT_PUBLIC_*` variables are exposed to the browser. Never put secrets in public variables.
 
@@ -299,7 +305,7 @@ RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
 All data fetching goes through a single composable that wraps Nuxt's `useFetch`:
 
 - Automatically prepends `NUXT_PUBLIC_API_BASE`
-- Injects `Authorization: Bearer <token>` from the `auth_token` cookie when present
+- Sends HTTP-only cookies automatically via `credentials: 'include'` — authentication is cookie-based, no manual token injection needed. On server-side (SSR), request cookies are forwarded via `useRequestHeaders(['cookie'])` so protected routes are resolved before the page renders.
 - Returns typed `ApiResponse<T>` with optional `data`, `links`, and `meta` pagination fields
 
 ### Cart Store — Pinia + localStorage
@@ -312,10 +318,10 @@ The cart is a Pinia store that hydrates from and persists to `localStorage` on t
 
 ### Auth Flow
 
-1. On login, the server sets an `auth_token` cookie
-2. `useApi` reads this cookie and attaches it as a Bearer token to every request
-3. The `auth` middleware checks for the cookie and redirects unauthenticated users to `/authentication/login`
-4. The `guest` middleware redirects logged-in users away from auth pages to `/profile`
+1. On login, the Laravel backend sets an `auth_token` cookie (HTTP-only, Secure in production)
+2. The browser sends this cookie automatically on every request via `credentials: 'include'` — no manual token handling needed
+3. The `auth` middleware runs on **both server and client**: it calls `/api/me` (forwarding cookies via `useRequestHeaders` on SSR) and redirects unauthenticated users to `/authentication/login` **before** the page renders
+4. The `guest` middleware redirects already-logged-in users away from auth pages to `/profile`
 
 ### Checkout Architecture
 
@@ -332,21 +338,81 @@ Form validation is handled by **Zod** via `@nuxt/ui`'s `UForm` component with th
 
 | Service | Role |
 |---|---|
-| **Vercel** | Frontend hosting (Nuxt SSR / static) |
-| **Render** | Laravel API backend hosting |
-| **Neon DB** | Serverless PostgreSQL database |
+| **Vercel** | Frontend hosting (Nuxt SSR) |
+| **Render** | Laravel API backend |
+| **Neon DB** | Serverless PostgreSQL |
 
-### Deploy to Vercel
+---
 
-```bash
-# Install Vercel CLI
-npm install -g vercel
+### Deploy Frontend to Vercel
 
-# Deploy
-vercel
+1. Push your repo to GitHub
+2. Import the project on [vercel.com](https://vercel.com)
+3. Set the following environment variables in Vercel project settings:
+
+| Variable | Value |
+|---|---|
+| `NUXT_PUBLIC_API_BASE` | `https://your-laravel.onrender.com` |
+| `RESEND_API_KEY` | Your Resend API key |
+| `RESEND_TO_EMAIL` | Email address to receive contact form messages |
+
+4. Deploy — Vercel auto-detects Nuxt and configures SSR.
+
+---
+
+### Deploy Backend to Render
+
+Set the following environment variables in your Render service:
+
+| Variable | Value |
+|---|---|
+| `APP_ENV` | `production` |
+| `APP_URL` | `https://your-laravel.onrender.com` |
+| `FRONTEND_URL` | `https://your-nuxt.vercel.app` |
+| `SESSION_SECURE_COOKIE` | `true` |
+| `SESSION_SAME_SITE` | `none` |
+| `APP_COOKIE_DOMAIN` | *(leave empty)* |
+
+---
+
+### Backend CORS Configuration (Required)
+
+For cookies to work cross-origin (Vercel → Render), the Laravel backend **must** be configured correctly.
+
+**`config/cors.php`:**
+```php
+return [
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'auth/*'],
+    'allowed_methods' => ['*'],
+    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
+    'allowed_headers' => ['*'],
+    'supports_credentials' => true,  // required for cookie-based auth
+];
 ```
 
-Make sure to set the `NUXT_PUBLIC_API_BASE` environment variable in your Vercel project settings to point to your production API URL.
+**`config/session.php`:**
+```php
+'secure'    => env('SESSION_SECURE_COOKIE', false),
+'same_site' => env('SESSION_SAME_SITE', 'lax'),
+'http_only' => true,
+```
+
+> ⚠️ `supports_credentials: true` is incompatible with `allowed_origins: ['*']` — you must specify the exact frontend origin.
+
+> ⚠️ `SameSite=None` requires `Secure=true`. Both are enforced in production via the environment variables above.
+
+---
+
+### Local Development
+
+Frontend and backend on `localhost` are treated as same-site by browsers, so relaxed cookie settings work fine:
+
+| Setting | Dev value | Production value |
+|---|---|---|
+| `Secure` | `false` | `true` |
+| `SameSite` | `Lax` | `None` |
+
+No extra configuration is needed for local development beyond setting `NUXT_PUBLIC_API_BASE=http://localhost:8000`.
 
 ---
 
