@@ -9,7 +9,7 @@ export const useAuth = () => {
     : null;
 
   const fetchUser = async () => {
-    if (user.value !== undefined) return;
+    if (import.meta.client && user.value !== undefined) return;
 
     const headers: Record<string, string> = {
       Accept: "application/json",
