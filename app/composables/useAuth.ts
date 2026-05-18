@@ -4,9 +4,8 @@ export const useAuth = () => {
   const user = useState<User | null | undefined>("user", () => undefined);
   const config = useRuntimeConfig();
 
-  const serverCookieHeader = import.meta.server
-    ? (useRequestHeaders(["cookie"]).cookie ?? null)
-    : null;
+  const event = import.meta.server ? useRequestEvent() : null;
+  const serverCookieHeader = event?.node.req.headers.cookie ?? null;
 
   const fetchUser = async () => {
     if (user.value !== undefined) return;
@@ -18,6 +17,8 @@ export const useAuth = () => {
     if (import.meta.server && serverCookieHeader) {
       headers.cookie = serverCookieHeader;
       console.log("[SSR] forwarding cookie:", serverCookieHeader);
+    } else if (import.meta.server) {
+      console.log("[SSR] no cookie found");
     }
 
     try {
