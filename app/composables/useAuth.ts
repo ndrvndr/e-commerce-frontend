@@ -19,6 +19,11 @@ export const useAuth = () => {
       headers.cookie = cookieHeader;
     }
 
+    console.log(
+      "[fetchUser] final headers being sent:",
+      JSON.stringify(headers),
+    );
+
     try {
       const response = await $fetch<{ data: User }>(
         `${config.public.apiBase}/api/me`,
@@ -27,8 +32,11 @@ export const useAuth = () => {
           headers,
         },
       );
+      console.log("[fetchUser] success, user:", response.data);
       user.value = response.data;
-    } catch (e) {
+    } catch (e: any) {
+      console.log("[fetchUser] error status:", e?.response?.status);
+      console.log("[fetchUser] error message:", e?.message);
       user.value = null;
     }
   };
