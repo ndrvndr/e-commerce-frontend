@@ -9,6 +9,10 @@ export const useAuth = () => {
     : null;
 
   const fetchUser = async () => {
+    console.log("[fetchUser] meta.server:", import.meta.server);
+    console.log("[fetchUser] user.value:", user.value);
+    console.log("[fetchUser] serverCookieHeader:", serverCookieHeader);
+
     if (import.meta.client && user.value !== undefined) return;
 
     const headers: Record<string, string> = {
