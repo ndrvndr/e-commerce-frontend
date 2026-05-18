@@ -4,8 +4,9 @@ export const useAuth = () => {
   const user = useState<User | null | undefined>("user", () => undefined);
   const config = useRuntimeConfig();
 
-  const event = import.meta.server ? useRequestEvent() : null;
-  const serverCookieHeader = event?.node.req.headers.cookie ?? null;
+  const serverCookieHeader = import.meta.server
+    ? (useRequestHeaders(["cookie"]).cookie ?? null)
+    : null;
 
   const fetchUser = async () => {
     if (user.value !== undefined) return;
@@ -14,17 +15,15 @@ export const useAuth = () => {
       Accept: "application/json",
     };
 
-    if (import.meta.server && serverCookieHeader) {
+    if (serverCookieHeader) {
       headers.cookie = serverCookieHeader;
-      console.log("[SSR] forwarding cookie:", serverCookieHeader);
-    } else if (import.meta.server) {
-      console.log("[SSR] no cookie found");
     }
 
     try {
       const response = await $fetch<{ data: User }>(
         `${config.public.apiBase}/api/me`,
         {
+          credentials: "include",
           headers,
         },
       );
