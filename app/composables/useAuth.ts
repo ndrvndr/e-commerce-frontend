@@ -4,14 +4,10 @@ export const useAuth = () => {
   const user = useState<User | null | undefined>("user", () => undefined);
   const config = useRuntimeConfig();
 
-  const serverCookieHeader = import.meta.server
-    ? (useRequestHeaders(["cookie"]).cookie ?? null)
-    : null;
-
-  const fetchUser = async () => {
+  const fetchUser = async (cookieHeader?: string) => {
     console.log("[fetchUser] meta.server:", import.meta.server);
     console.log("[fetchUser] user.value:", user.value);
-    console.log("[fetchUser] serverCookieHeader:", serverCookieHeader);
+    console.log("[fetchUser] cookieHeader:", cookieHeader);
 
     if (import.meta.client && user.value !== undefined) return;
 
@@ -19,8 +15,8 @@ export const useAuth = () => {
       Accept: "application/json",
     };
 
-    if (serverCookieHeader) {
-      headers.cookie = serverCookieHeader;
+    if (cookieHeader) {
+      headers.cookie = cookieHeader;
     }
 
     try {
