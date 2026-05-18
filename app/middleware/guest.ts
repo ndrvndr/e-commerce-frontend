@@ -1,8 +1,15 @@
 export default defineNuxtRouteMiddleware(async () => {
-  const { fetchUser, isLoggedIn } = useAuth();
+  const allHeaders = useRequestHeaders();
+  const cookieHeader = useRequestHeaders(["cookie"]).cookie;
 
-  const headers = useRequestHeaders(["cookie"]);
-  await fetchUser(headers.cookie);
+  console.log("[guest middleware] all headers:", JSON.stringify(allHeaders));
+  console.log("[guest middleware] cookie header:", cookieHeader);
+  console.log("[guest middleware] import.meta.server:", import.meta.server);
+
+  const { fetchUser, isLoggedIn } = useAuth();
+  await fetchUser(cookieHeader);
+
+  console.log("[guest middleware] isLoggedIn after fetch:", isLoggedIn.value);
 
   if (isLoggedIn.value) {
     return navigateTo("/profile");
