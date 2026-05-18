@@ -172,7 +172,7 @@
                     variant="outline"
                     size="xl"
                     class="mt-6"
-                    :disabled="authReady === false"
+                    :disabled="!authReady"
                     :loading="isLoggingOut"
                     @click="handleLogout"
                 />
@@ -186,7 +186,6 @@ import type { AddressWithId } from "~/types/address";
 
 definePageMeta({
     middleware: "auth",
-    layout: computed(() => (authReady.value ? "default" : false)),
 });
 
 useHead({
